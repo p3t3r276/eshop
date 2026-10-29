@@ -1,0 +1,74 @@
+<Project>
+  <!--
+    Central Package Management cho toàn repo.
+    Nếu restore báo không tìm thấy một version, đổi sang bản mới nhất cùng major trên nuget.org.
+  -->
+  <PropertyGroup>
+    <AspireVersion>13.5.0</AspireVersion>
+    <AspNetVersion>10.0.0</AspNetVersion>
+    <EfVersion>10.0.0</EfVersion>
+    <TestcontainersVersion>4.6.0</TestcontainersVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Aspire hosting (AppHost) -->
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Keycloak" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
+
+    <!-- Aspire client integrations -->
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="$(AspireVersion)" />
+
+    <!-- ServiceDefaults -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="10.0.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
+
+    <!-- ASP.NET Core -->
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.6.0" />
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
+
+    <!-- Data -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfVersion)" />
+    <PackageVersion Include="Npgsql" Version="10.0.0" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.0" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.4.0" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.58" />
+    <PackageVersion Include="RabbitMQ.Client" Version="7.1.2" />
+
+    <!-- Jobs, mail -->
+    <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.21" />
+    <PackageVersion Include="Hangfire.PostgreSql" Version="1.20.12" />
+    <PackageVersion Include="MailKit" Version="4.13.0" />
+    <PackageVersion Include="Fluid.Core" Version="2.25.0" />
+
+    <!-- Test -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit.v3" Version="3.0.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.9.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="$(TestcontainersVersion)" />
+    <PackageVersion Include="Testcontainers.Redis" Version="$(TestcontainersVersion)" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="$(TestcontainersVersion)" />
+    <PackageVersion Include="Testcontainers.MongoDb" Version="$(TestcontainersVersion)" />
+    <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
+  </ItemGroup>
+</Project>
