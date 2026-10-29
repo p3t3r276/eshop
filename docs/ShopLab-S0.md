@@ -6,7 +6,7 @@ chạy bằng Testcontainers. Chưa có nghiệp vụ; mọi thứ ở đây là
 
 Cách đọc file này: làm lần lượt từng buổi. Mỗi buổi có việc cần làm, lệnh, **nội dung đầy đủ của từng file** cần tạo, và cách kiểm tra cuối buổi.
 
-**Thời lượng:** 2 tuần · 9 buổi (mỗi buổi ~2–3 giờ ngoài giờ làm). **File:** 77 tạo mới, 0 sửa.
+**Thời lượng:** 2 tuần · 9 buổi (mỗi buổi ~2–3 giờ ngoài giờ làm). **File:** 73 tạo mới, 0 sửa.
 
 ## Lịch
 
@@ -31,7 +31,8 @@ Cài thêm extension REST Client (VS Code) hoặc dùng HTTP client của Rider 
 
 ```bash
 # Buổi 1 — repo + cấu hình gốc
-dotnet new gitignore && dotnet new editorconfig && dotnet new buildprops && dotnet new packagesprops
+dotnet new gitignore && dotnet new editorconfig
+dotnet new buildprops && dotnet new packagesprops
 dotnet new sln -n shoplab --format slnx
 # Buổi 2 — project dùng chung
 dotnet new install Aspire.ProjectTemplates
@@ -90,9 +91,11 @@ Repo dùng Central Package Management nên csproj không ghi version — `dotnet
 mkdir shoplab && cd shoplab
 git init
 
-# File cấu hình gốc (tạo khung bằng template, rồi thay nội dung theo file bên dưới)
+# .gitignore, .editorconfig: dùng nguyên nội dung template tạo ra, không cần sửa
 dotnet new gitignore
 dotnet new editorconfig
+
+# File cấu hình build (tạo khung bằng template, rồi thay nội dung theo file bên dưới)
 dotnet new buildprops          # Directory.Build.props
 dotnet new packagesprops       # Directory.Packages.props (Central Package Management)
 dotnet new sln -n shoplab --format slnx
@@ -108,8 +111,6 @@ git add -A && git commit -m "s0: cấu hình gốc"
 
 **File**
 
-- `.gitignore`
-- `.editorconfig`
 - `Directory.Build.props`
 - `Directory.Packages.props`
 - `README.md`
@@ -167,11 +168,11 @@ git add -A && git commit -m "s0: cấu hình gốc"
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="10.0.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
 
     <!-- ASP.NET Core -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetVersion)" />
@@ -319,9 +320,11 @@ git log --oneline   # 1 commit; dotnet sln list → chưa có project
 **Việc cần làm**
 
 1. `ServiceDefaults`: OpenTelemetry (trace/metric/log), health check `/health` `/alive`, service discovery, resilience cho HttpClient.
-2. `BuildingBlocks/Auth`: JWT bearer trỏ Keycloak, đổi `realm_access.roles` thành role claim, policy dùng chung, `ICurrentUser`.
-3. `TestUserAuthHandler`: chỉ bật ở môi trường `LoadTest` — header `X-Test-User` thay token (dùng cho k6 từ S2).
-4. `Contracts`: project rỗng, chứa integration event từ S3.
+2. `AuthExtensions`: JWT bearer trỏ realm Keycloak (scheme mặc định duy nhất), policy dùng chung theo role.
+3. `KeycloakRolesTransformation`: Keycloak gói role trong claim JSON `realm_access.roles`; tách thành từng claim `role` để `RequireRole` chạy được.
+4. `CurrentUser`: `ICurrentUser` đọc sub/username/email/store_id từ token.
+5. Chưa làm đăng nhập giả cho k6 — `TestUserAuthHandler` thêm ở S2 khi có profile LoadTest.
+6. `Contracts`: project rỗng, chứa integration event từ S3.
 
 **Lệnh**
 
@@ -360,7 +363,6 @@ dotnet build src/BuildingBlocks
 - `src/BuildingBlocks/Auth/AuthExtensions.cs`
 - `src/BuildingBlocks/Auth/CurrentUser.cs`
 - `src/BuildingBlocks/Auth/KeycloakRolesTransformation.cs`
-- `src/BuildingBlocks/Auth/TestUserAuthHandler.cs`
 
 #### `src/ServiceDefaults/Extensions.cs`
 
@@ -544,12 +546,8 @@ public static class AuthExtensions
         var authority = builder.Configuration["Keycloak:Authority"] ?? "http://localhost:8080/realms/shoplab";
         var audience = builder.Configuration["Keycloak:Audience"] ?? "gateway";
 
-        var auth = builder.Services
-            .AddAuthentication(options =>
-            {
-                options.DefaultScheme = AuthSchemes.Smart;
-                options.DefaultChallengeScheme = AuthSchemes.Smart;
-            })
+        builder.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Authority = authority;
@@ -560,21 +558,8 @@ public static class AuthExtensions
                 options.TokenValidationParameters.RoleClaimType = ShopLabClaims.Role;
                 // Keycloak chạy local qua http; issuer khớp vì mọi thứ đều dùng localhost:8080.
                 options.TokenValidationParameters.ValidateIssuer = true;
-            })
-            // Chọn scheme theo request: header X-Test-User chỉ được dùng ở môi trường LoadTest (từ S2).
-            .AddPolicyScheme(AuthSchemes.Smart, AuthSchemes.Smart, options =>
-            {
-                options.ForwardDefaultSelector = ctx =>
-                    TestUserAuthHandler.IsEnabled(builder.Environment) &&
-                    ctx.Request.Headers.ContainsKey(TestUserAuthHandler.HeaderName)
-                        ? TestUserAuthHandler.SchemeName
-                        : JwtBearerDefaults.AuthenticationScheme;
             });
-
-        if (TestUserAuthHandler.IsEnabled(builder.Environment))
-        {
-            auth.AddScheme<AuthenticationSchemeOptions, TestUserAuthHandler>(TestUserAuthHandler.SchemeName, _ => { });
-        }
+        // S2 sẽ thêm scheme TestUser (header X-Test-User, chỉ ở môi trường LoadTest) + policy scheme "smart" chọn giữa hai scheme.
 
         builder.Services.AddTransient<IClaimsTransformation, KeycloakRolesTransformation>();
 
@@ -590,11 +575,6 @@ public static class AuthExtensions
         builder.Services.AddScoped<ICurrentUser, CurrentUser>();
         return builder;
     }
-}
-
-public static class AuthSchemes
-{
-    public const string Smart = "smart";
 }
 
 public static class ShopLabClaims
@@ -690,68 +670,6 @@ public sealed class KeycloakRolesTransformation : IClaimsTransformation
         }
 
         return Task.FromResult(principal);
-    }
-}
-```
-
-#### `src/BuildingBlocks/Auth/TestUserAuthHandler.cs`
-
-```csharp
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
-namespace BuildingBlocks.Auth;
-
-/// <summary>
-/// Chỉ dùng cho môi trường LoadTest: header "X-Test-User: loadtest-42" thay cho token Keycloak,
-/// để k6 không phải xin 5.000 token. Ở môi trường khác scheme này không được đăng ký.
-/// </summary>
-public sealed class TestUserAuthHandler(
-    IOptionsMonitor<AuthenticationSchemeOptions> options,
-    ILoggerFactory logger,
-    UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
-{
-    public const string SchemeName = "TestUser";
-    public const string HeaderName = "X-Test-User";
-    public const string RolesHeaderName = "X-Test-Roles";
-
-    public static bool IsEnabled(IHostEnvironment env) => env.IsEnvironment("LoadTest");
-
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-    {
-        if (!Request.Headers.TryGetValue(HeaderName, out var values) || string.IsNullOrWhiteSpace(values))
-            return Task.FromResult(AuthenticateResult.NoResult());
-
-        var username = values.ToString();
-        var roles = Request.Headers.TryGetValue(RolesHeaderName, out var r) && !string.IsNullOrWhiteSpace(r)
-            ? r.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            : [Roles.Customer];
-
-        var claims = new List<Claim>
-        {
-            new(ShopLabClaims.Subject, DeterministicId(username).ToString()),
-            new(ShopLabClaims.Username, username),
-            new(ShopLabClaims.Email, $"{username}@loadtest.local"),
-            new(ShopLabClaims.Name, username),
-        };
-        claims.AddRange(roles.Select(role => new Claim(ShopLabClaims.Role, role)));
-
-        var identity = new ClaimsIdentity(claims, SchemeName, ShopLabClaims.Username, ShopLabClaims.Role);
-        var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName);
-        return Task.FromResult(AuthenticateResult.Success(ticket));
-    }
-
-    /// <summary>Cùng username luôn ra cùng Guid, để giỏ hàng và giới hạn mua của từng user ảo ổn định.</summary>
-    public static Guid DeterministicId(string username)
-    {
-        var hash = MD5.HashData(Encoding.UTF8.GetBytes("shoplab-loadtest:" + username));
-        return new Guid(hash);
     }
 }
 ```
@@ -1508,7 +1426,7 @@ npm i -D @nx/angular@21.5.0 @angular/build@^20.3 @angular/cli@^20.3 @angular/com
 # 3. Lib ui
 npx nx g @nx/angular:library --directory=libs/ui --name=ui --importPath=@shoplab/ui --standalone --skipTests
 
-# 4. Thay package.json, nx.json, tsconfig.base.json, .gitignore và file của libs/ui theo phần "File"
+# 4. Thay package.json, nx.json, tsconfig.base.json và file của libs/ui theo phần "File"
 npm install
 cd ../..
 
@@ -1521,7 +1439,6 @@ chmod +x tools/scaffold-angular-app.sh
 - `src/Web/package.json`
 - `src/Web/nx.json`
 - `src/Web/tsconfig.base.json`
-- `src/Web/.gitignore`
 - `tools/scaffold-angular-app.sh`
 - `src/Web/libs/ui/project.json`
 - `src/Web/libs/ui/src/index.ts`
@@ -1631,16 +1548,6 @@ chmod +x tools/scaffold-angular-app.sh
   },
   "exclude": ["node_modules", "tmp"]
 }
-```
-
-#### `src/Web/.gitignore`
-
-```
-node_modules
-dist
-tmp
-.nx
-.angular
 ```
 
 #### `tools/scaffold-angular-app.sh`
