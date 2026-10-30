@@ -14,38 +14,6 @@
     ]
   },
   "defaultRoles": ["customer"],
-  "clientScopes": [
-    {
-      "name": "shoplab-api",
-      "protocol": "openid-connect",
-      "attributes": { "include.in.token.scope": "true" },
-      "protocolMappers": [
-        {
-          "name": "audience-gateway",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-audience-mapper",
-          "config": {
-            "included.client.audience": "gateway",
-            "id.token.claim": "false",
-            "access.token.claim": "true"
-          }
-        },
-        {
-          "name": "store-id",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-attribute-mapper",
-          "config": {
-            "user.attribute": "store_id",
-            "claim.name": "store_id",
-            "jsonType.label": "String",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "userinfo.token.claim": "true"
-          }
-        }
-      ]
-    }
-  ],
   "clients": [
     {
       "clientId": "gateway",
@@ -66,7 +34,13 @@
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:4200/*"
       },
-      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+      "protocolMappers": [
+        { "name": "audience-gateway", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.client.audience": "gateway", "id.token.claim": "false", "access.token.claim": "true" } },
+        { "name": "store-id", "protocol": "openid-connect", "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": { "user.attribute": "store_id", "claim.name": "store_id", "jsonType.label": "String",
+                      "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } }
+      ]
     },
     {
       "clientId": "admin",
@@ -80,7 +54,13 @@
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:4300/*"
       },
-      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+      "protocolMappers": [
+        { "name": "audience-gateway", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.client.audience": "gateway", "id.token.claim": "false", "access.token.claim": "true" } },
+        { "name": "store-id", "protocol": "openid-connect", "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": { "user.attribute": "store_id", "claim.name": "store_id", "jsonType.label": "String",
+                      "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } }
+      ]
     },
     {
       "clientId": "pos",
@@ -94,7 +74,13 @@
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:4400/*"
       },
-      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+      "protocolMappers": [
+        { "name": "audience-gateway", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.client.audience": "gateway", "id.token.claim": "false", "access.token.claim": "true" } },
+        { "name": "store-id", "protocol": "openid-connect", "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": { "user.attribute": "store_id", "claim.name": "store_id", "jsonType.label": "String",
+                      "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } }
+      ]
     },
     {
       "clientId": "shoplab-cli",
@@ -103,7 +89,13 @@
       "publicClient": true,
       "standardFlowEnabled": false,
       "directAccessGrantsEnabled": true,
-      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+      "protocolMappers": [
+        { "name": "audience-gateway", "protocol": "openid-connect", "protocolMapper": "oidc-audience-mapper",
+          "config": { "included.client.audience": "gateway", "id.token.claim": "false", "access.token.claim": "true" } },
+        { "name": "store-id", "protocol": "openid-connect", "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": { "user.attribute": "store_id", "claim.name": "store_id", "jsonType.label": "String",
+                      "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true" } }
+      ]
     }
   ],
   "users": [

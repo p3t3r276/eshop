@@ -1,3 +1,5 @@
+using AppHost;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var pg = builder.AddPostgres("pg")
@@ -9,5 +11,13 @@ var keycloakPassword = builder.AddParameter("keycloak-password", "admin", secret
 var keycloak = builder.AddKeycloak("keycloak", 8080, keycloakAdmin, keycloakPassword)
     .WithDataVolume("shoplab-keycloak")
     .WithRealmImport("../../docker/keycloak");
+
+var catalog = builder.AddProject<Projects.Catalog_Api>("catalog")
+    .WithKeycloak(keycloak);
+
+var gateway = builder.AddProject<Projects.Gateway_Web>("gateway")
+    .WithKeycloak(keycloak)
+    .WithReference(catalog)
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();

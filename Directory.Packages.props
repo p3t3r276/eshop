@@ -4,7 +4,7 @@
     Nếu restore báo không tìm thấy một version, đổi sang bản mới nhất cùng major trên nuget.org.
   -->
   <PropertyGroup>
-    <AspireVersion>13.5.0</AspireVersion>
+    <AspireVersion>13.6.4</AspireVersion>
     <AspNetVersion>10.0.0</AspNetVersion>
     <EfVersion>10.0.0</EfVersion>
     <TestcontainersVersion>4.6.0</TestcontainersVersion>
@@ -14,7 +14,7 @@
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="$(AspireVersion)" />
-    <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.5.1-preview.1.26420.4" />
+    <PackageVersion Include="Aspire.Hosting.Keycloak" Version="13.6.4-preview.1.26523.11" />
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
 

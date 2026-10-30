@@ -16,8 +16,8 @@ public static class Policies
     public const string Customer = "customer";
     public const string Admin = "admin";
     public const string Cashier = "cashier";
-    public const string StoreManager = "strore_manager";
-    public const string ScoreStaff = "store_staff";
+    public const string StoreManager = "store_manager";
+    public const string StoreStaff = "store_staff";
 }
 
 public static class Roles
@@ -77,7 +77,7 @@ public static class AuthExtensions
             .AddPolicy(Policies.Admin, p => p.RequireRole(Roles.Admin))
             .AddPolicy(Policies.Cashier, p => p.RequireRole(Roles.Cashier, Roles.StoreManager))
             .AddPolicy(Policies.StoreManager, p => p.RequireRole(Roles.StoreManager))
-            .AddPolicy(Policies.StoreManager, p => p.RequireRole(Roles.Cashier, Roles.StoreManager));
+            .AddPolicy(Policies.StoreStaff, p => p.RequireRole(Roles.Cashier, Roles.StoreManager));
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<ICurrentUser, CurrentUser>();
