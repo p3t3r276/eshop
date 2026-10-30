@@ -80,6 +80,7 @@ public static class AuthExtensions
             .AddPolicy(Policies.StoreManager, p => p.RequireRole(Roles.Cashier, Roles.StoreManager));
 
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
         return builder;
     }
 }
