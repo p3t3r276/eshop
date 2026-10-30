@@ -1,0 +1,191 @@
+{
+  "realm": "shoplab",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 1800,
+  "roles": {
+    "realm": [
+      { "name": "customer", "description": "Khách mua hàng" },
+      { "name": "admin", "description": "Quản trị hệ thống" },
+      { "name": "cashier", "description": "Thu ngân tại cửa hàng" },
+      { "name": "store_manager", "description": "Quản lý cửa hàng" }
+    ]
+  },
+  "defaultRoles": ["customer"],
+  "clientScopes": [
+    {
+      "name": "shoplab-api",
+      "protocol": "openid-connect",
+      "attributes": { "include.in.token.scope": "true" },
+      "protocolMappers": [
+        {
+          "name": "audience-gateway",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "gateway",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "store-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "store_id",
+            "claim.name": "store_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "gateway",
+      "name": "Audience cho API",
+      "enabled": true,
+      "bearerOnly": true,
+      "publicClient": false
+    },
+    {
+      "clientId": "storefront",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4200/*"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+    },
+    {
+      "clientId": "admin",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:4300/*"],
+      "webOrigins": ["http://localhost:4300"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4300/*"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+    },
+    {
+      "clientId": "pos",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:4400/*"],
+      "webOrigins": ["http://localhost:4400"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4400/*"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+    },
+    {
+      "clientId": "shoplab-cli",
+      "name": "Chỉ dùng ở máy dev: lấy token bằng username/password",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "defaultClientScopes": ["profile", "email", "roles", "shoplab-api"]
+    }
+  ],
+  "users": [
+    {
+      "id": "00000000-0000-0000-0000-0000000000a1",
+      "username": "admin@shoplab.local",
+      "email": "admin@shoplab.local",
+      "emailVerified": true,
+      "firstName": "Quản trị",
+      "lastName": "ShopLab",
+      "enabled": true,
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["admin", "customer"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000000a2",
+      "username": "manager.q1",
+      "email": "manager.q1@shoplab.local",
+      "emailVerified": true,
+      "firstName": "Quản lý",
+      "lastName": "Quận 1",
+      "enabled": true,
+      "attributes": { "store_id": ["5a000000-0000-0000-0000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["store_manager"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000000a3",
+      "username": "cashier.q1",
+      "email": "cashier.q1@shoplab.local",
+      "emailVerified": true,
+      "firstName": "Thu ngân",
+      "lastName": "Quận 1",
+      "enabled": true,
+      "attributes": { "store_id": ["5a000000-0000-0000-0000-000000000001"] },
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["cashier"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000000c1",
+      "username": "an.nguyen",
+      "email": "an.nguyen@shoplab.local",
+      "emailVerified": true,
+      "firstName": "An",
+      "lastName": "Nguyễn",
+      "enabled": true,
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["customer"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000000c2",
+      "username": "binh.tran",
+      "email": "binh.tran@shoplab.local",
+      "emailVerified": true,
+      "firstName": "Bình",
+      "lastName": "Trần",
+      "enabled": true,
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["customer"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000000c3",
+      "username": "chi.le",
+      "email": "chi.le@shoplab.local",
+      "emailVerified": true,
+      "firstName": "Chi",
+      "lastName": "Lê",
+      "enabled": true,
+      "credentials": [
+        { "type": "password", "value": "Passw0rd!", "temporary": false }
+      ],
+      "realmRoles": ["customer"]
+    }
+  ]
+}
