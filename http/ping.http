@@ -1,0 +1,10 @@
+### Lấy token trước: TOKEN=$(./tools/get-token.sh an.nguyen) rồi dán vào biến dưới
+@gateway = http://localhost:5000
+@token = paste-token-here
+
+### Không token → 401
+GET {{gateway}}/api/ping
+
+### Có token → 200
+GET {{gateway}}/api/ping
+Authorization: Bearer {{token}}

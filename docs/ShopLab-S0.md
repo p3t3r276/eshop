@@ -1054,7 +1054,7 @@ aspire run --project src/AppHost
   <PropertyGroup>
     <!-- Sinh file OpenAPI lúc build: contracts/openapi/Catalog.Api.json -->
     <OpenApiDocumentsDirectory>$(MSBuildThisFileDirectory)../../../contracts/openapi</OpenApiDocumentsDirectory>
-    <OpenApiGenerateDocumentsOptions>--file-name Catalog.Api</OpenApiGenerateDocumentsOptions>
+    <OpenApiGenerateDocumentsOptions>--file-name catalog-api</OpenApiGenerateDocumentsOptions>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

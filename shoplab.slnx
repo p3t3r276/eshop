@@ -5,4 +5,10 @@
     <Project Path="src/Contracts/Contracts.csproj" />
     <Project Path="src/ServiceDefaults/ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/src/Gateways/">
+    <Project Path="src/Gateways/Gateway.Web/Gateway.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/">
+    <Project Path="src/Services/Catalog.Api/Catalog.Api.csproj" />
+  </Folder>
 </Solution>

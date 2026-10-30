@@ -1,0 +1,23 @@
+{
+    "ReverseProxy": {
+        "Routes": {
+        "ping": {
+            "ClusterId": "catalog",
+            "AuthorizationPolicy": "authenticated",
+            "Match": { "Path": "/api/ping" },
+            "Transforms": [{ "PathSet": "/ping" }]
+        },
+        "catalog": {
+            "ClusterId": "catalog",
+            "AuthorizationPolicy": "Anonymous",
+            "Match": { "Path": "/api/catalog/{**rest}" },
+            "Transforms": [{ "PathPattern": "/{**rest}" }]
+        }
+        },
+        "Clusters": {
+        "catalog": {
+            "Destinations": { "d1": { "Address": "https+http://catalog" } }
+        }
+        }
+    }
+}

@@ -15,4 +15,9 @@
     <PackageReference Include="Aspire.Hosting.Keycloak" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Services\Catalog.Api\Catalog.Api.csproj" />
+    <ProjectReference Include="..\Gateways\Gateway.Web\Gateway.Web.csproj" />
+  </ItemGroup>
+
 </Project>
