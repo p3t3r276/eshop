@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(docs/**)",
+      "Edit(docs/**)",
+      "Write(docs/**)",
+      "Bash(bash scripts/status.sh:*)",
+      "Bash(bash scripts/build.sh:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet new:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)"
+    ],
+    "deny": [
+      "Edit(docs/source/**)",
+      "Write(docs/source/**)",
+      "Read(.env)",
+      "Read(**/.env)",
+      "Read(**/appsettings.Production.json)"
+    ]
+  }
+}
