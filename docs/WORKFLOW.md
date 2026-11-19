@@ -111,6 +111,7 @@ Bạn không cần nhớ mình đang ở đâu:
 
 - **Đổi model**: sửa dòng `model:` trong từng file `.claude/agents/*.md`. Review quan trọng thì ghim phiên bản cụ thể thay vì alias.
 - **Tài liệu có nhiều code hơn**: thêm vào brief mục quy ước code chi tiết hơn, và đặt thêm một agent `code-checker` (Sonnet, có Bash) chỉ chạy build, test các snippet.
+- **Code gọn hơn (ponytail)**: `.claude/skills/ponytail/SKILL.md` chép nguyên từ [dietrichgebert/ponytail](https://github.com/dietrichgebert/ponytail) (MIT, v5.3.3). Chỉ `doc-writer` đọc file này, ở mức `full`, và chỉ cho snippet mới trong `docs/_snippets/<id>/`. Code trích từ `src/` vẫn giữ nguyên văn. Không cài plugin đầy đủ, vì hook `SubagentStart` của nó chèn quy tắc vào mọi subagent (kể cả các agent chỉ viết văn bản), cần `node` và ghi log vào `~/.config/ponytail/`. Không dùng mức `ultra`, vì nó hỏi ngược lại yêu cầu và làm writer chạy tự động bị kẹt. Khi ponytail và quy tắc tài liệu xung đột, quy tắc tài liệu thắng.
 - **Thêm ngôn ngữ**: thêm một bước dịch sau `/fix-review` bằng writer, với bảng thuật ngữ cho ngôn ngữ đích trong brief.
 - **Tài liệu nhỏ (dưới khoảng 15–20 trang)**: bỏ quy trình này, một phiên Sonnet viết liền mạch sẽ nhất quán hơn.
 

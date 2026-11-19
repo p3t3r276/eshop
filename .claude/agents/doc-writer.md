@@ -28,6 +28,7 @@ The prompt looks like "Write section S03".
 4. **Code**
    - Code that already exists in the lab repo (`src/...`): quote an excerpt from the real file and give its path. Never rewrite it from memory.
    - New snippets: put them in `docs/_snippets/<id>/` and run `dotnet build`. Fix until it builds.
+   - Before writing the first new snippet, Read `.claude/skills/ponytail/SKILL.md` and apply its `full` level to new snippets only: the smallest code that fully works, BCL/ASP.NET built-ins first, no abstraction, option or config nobody asked for. Never apply it to excerpts quoted from `src/`. The document rules win over ponytail: keep what the lesson must show, keep `UNVERIFIED` markers, keep the report format below. Put ponytail's "what I skipped" note in that report. Its "one small test/assert" rule applies inside `docs/_snippets/<id>/` only; do not show that test in the section unless the section is about tests.
    - If it cannot be built (no SDK, needs Redis/RabbitMQ, ...): add `<!-- UNVERIFIED: reason -->` directly above that block. Never claim code was run when it was not.
 5. **Missing information**: if the sources do not contain something you need, do not invent it. Record it in `docs/gaps/<id>.md` (one line per gap: which passage, what is needed) and continue with the other parts.
 6. **Finish**: run the checks below, then set `status: done`.
